@@ -42,7 +42,7 @@ export default function NavBar() {
                 <UserButton.Link
                   label="Dashboard"
                   labelIcon={<LayoutDashboard className="h-4 w-4" />}
-                  href="/"
+                  href="/dashboard"
                 />
               </UserButton.MenuItems>
             </UserButton>

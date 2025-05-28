@@ -14,6 +14,10 @@ export const metadata = {
   metadataBase: new URL("https://precedent.dev"),
 };
 
+// Adicione estas importações
+import { Toaster } from "react-hot-toast";
+
+// Dentro do componente RootLayout, adicione o Toaster
 export default async function RootLayout({
   children,
 }: {
@@ -31,7 +35,10 @@ export default async function RootLayout({
             {children}
           </main>
           <Footer />
-          <VercelAnalytics />
+          <Suspense fallback={null}>
+            <VercelAnalytics />
+          </Suspense>
+          <Toaster position="bottom-right" />
         </body>
       </html>
     </ClerkProvider>
