@@ -17,6 +17,9 @@ model Medico {
   crm           String   @unique
   email         String   @unique
   telefone      String
+  diasAtendimento String[] @default([]) // Array de dias da semana (seg, ter, qua, qui, sex, sab, dom)
+  horarioInicio String?    // Formato HH:MM
+  horarioFim    String?    // Formato HH:MM
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
   agendamentos  Agendamento[]

@@ -32,7 +32,7 @@ export default function DashboardLayout({
   return (
     <div className="-mt-32 flex h-screen w-full max-w-screen-xl mx-auto">
       {/* Sidebar */}
-      <div className={`fixed top-16 left-0 z-20 flex h-[calc(100vh-4rem)] w-64 flex-col border-r border-gray-200 bg-white transition-all duration-300 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:relative md:translate-x-0`}>
+      <div className={`fixed top-16 left-0 z-1 flex h-[calc(100vh-4rem)] w-64 flex-col border-r border-gray-200 bg-white transition-all duration-300 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:relative md:translate-x-0`}>
         <div className="flex items-center justify-between border-b border-gray-200 p-4">
           <div className="flex items-center space-x-2">
             {user?.imageUrl && (

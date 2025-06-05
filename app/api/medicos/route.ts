@@ -33,7 +33,10 @@ export async function POST(request: NextRequest) {
       especialidade: body.especialidade,
       crm: body.crm,
       email: body.email,
-      telefone: body.telefone
+      telefone: body.telefone,
+      diasAtendimento: body.diasAtendimento || [],
+      horarioInicio: body.horarioInicio || '',
+      horarioFim: body.horarioFim || ''
     };
 
     const novoMedico = await MedicoService.create(medicoData);

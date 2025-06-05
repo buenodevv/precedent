@@ -2,7 +2,7 @@
 
 import { useUser } from "@clerk/nextjs";
 import { redirect } from "next/navigation";
-import { Users, Search, PlusCircle, X, Pencil, Trash2 } from "lucide-react";
+import { Users, Search, PlusCircle, X, Pencil, Trash2, Edit } from "lucide-react";
 import { useState, useEffect } from "react";
 import Modal from "@/components/shared/modal";
 import { toast } from "react-hot-toast";
@@ -315,16 +315,14 @@ export default function Pacientes() {
                             title="Editar paciente"
                             onClick={() => handleEditarPaciente(paciente)}
                           >
-                            <Pencil className="w-4 h-4" />
-                            <span className="ml-1.5 text-xs font-medium">Editar</span>
+                            <Edit className="w-4 h-4" />
                           </button>
                           <button 
                             className="flex items-center justify-center p-1.5 bg-red-100 text-red-700 rounded-md hover:bg-red-200 transition-colors duration-200"
                             title="Excluir paciente"
                             onClick={() => handleExcluirPaciente(paciente.id)}
                           >
-                            <Trash2 className="w-4 h-4" />
-                            <span className="ml-1.5 text-xs font-medium">Excluir</span>
+                            <Trash2 className="w-5 h-5" />
                           </button>
                         </div>
                       </td>

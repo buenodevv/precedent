@@ -12,6 +12,12 @@ module.exports = {
         display: ["var(--font-sf)", "system-ui", "sans-serif"],
         default: ["var(--font-inter)", "system-ui", "sans-serif"],
       },
+      colors: {
+        primary: 'oklch(58.5% 0.233 277.117)',
+        secondary: 'oklch(51.1% 0.262 276.966)',
+        hover: 'oklch(45.7% 0.24 277.023)',
+        fc: 'oklch(58.5% 0.233 277.117)',
+      },
       animation: {
         // Fade up and down
         "fade-up": "fade-up 0.5s",

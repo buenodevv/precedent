@@ -2,7 +2,7 @@
 
 import { useUser } from "@clerk/nextjs";
 import { redirect } from "next/navigation";
-import { BriefcaseIcon, Search, PlusCircle, X, Pencil, Trash2 } from "lucide-react";
+import { BriefcaseIcon, Search, PlusCircle, X, Pencil, Trash2, Edit } from "lucide-react";
 import { useState, useEffect } from "react";
 import Modal from "@/components/shared/modal";
 import { toast } from "react-hot-toast";
@@ -14,6 +14,9 @@ interface Medico {
   crm: string;
   email: string;
   telefone: string;
+  diasAtendimento?: string[];
+  horarioInicio?: string;
+  horarioFim?: string;
 }
 
 export default function Medicos() {
@@ -29,7 +32,10 @@ export default function Medicos() {
     especialidade: "",
     crm: "",
     email: "",
-    telefone: ""
+    telefone: "",
+    diasAtendimento: [] as string[],
+    horarioInicio: "",
+    horarioFim: ""
   });
   
   // Redirecionar para a página inicial se o usuário não estiver autenticado
@@ -67,12 +73,30 @@ export default function Medicos() {
   }, [searchTerm]);
 
   // Função para lidar com a mudança nos campos do formulário
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setNovoMedico(prev => ({
       ...prev,
       [name]: value
     }));
+  };
+
+  // Função para lidar com a mudança nos checkboxes de dias de atendimento
+  const handleDiaAtendimentoChange = (dia: string) => {
+    setNovoMedico(prev => {
+      const diasAtuais = [...prev.diasAtendimento];
+      if (diasAtuais.includes(dia)) {
+        return {
+          ...prev,
+          diasAtendimento: diasAtuais.filter(d => d !== dia)
+        };
+      } else {
+        return {
+          ...prev,
+          diasAtendimento: [...diasAtuais, dia]
+        };
+      }
+    });
   };
 
   // Função para abrir o modal de edição
@@ -84,7 +108,10 @@ export default function Medicos() {
       especialidade: medico.especialidade,
       crm: medico.crm,
       email: medico.email,
-      telefone: medico.telefone
+      telefone: medico.telefone,
+      diasAtendimento: medico.diasAtendimento || [],
+      horarioInicio: medico.horarioInicio || '',
+      horarioFim: medico.horarioFim || ''
     });
     setShowModal(true);
   };
@@ -141,7 +168,10 @@ export default function Medicos() {
         especialidade: "",
         crm: "",
         email: "",
-        telefone: ""
+        telefone: "",
+        diasAtendimento: [],
+        horarioInicio: "",
+        horarioFim: ""
       });
       setModoEdicao(false);
       setMedicoEmEdicao(null);
@@ -183,7 +213,10 @@ export default function Medicos() {
       especialidade: "",
       crm: "",
       email: "",
-      telefone: ""
+      telefone: "",
+      diasAtendimento: [],
+      horarioInicio: "",
+      horarioFim: ""
     });
     setShowModal(true);
   };
@@ -194,7 +227,7 @@ export default function Medicos() {
         Médicos
       </h1>
       
-      <div className="mt-8 rounded-xl border border-gray-200 bg-white shadow-sm p-6">
+      <div className="w-full mt-8 rounded-xl border border-gray-200 bg-white shadow-sm p-6">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center">
             <h3 className="font-display text-xl font-bold">Lista de Médicos</h3>
@@ -229,7 +262,8 @@ export default function Medicos() {
         </div>
 
         {/* Tabela de médicos */}
-        <div className="relative overflow-x-hidden shadow-md sm:rounded-lg">
+        
+        <div className="w-full overflow-x-hidden">
           {isLoading ? (
             <div className="flex justify-center items-center p-8">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
@@ -247,9 +281,10 @@ export default function Medicos() {
                 <tr>
                   <th scope="col" className="px-6 py-3">Nome</th>
                   <th scope="col" className="px-6 py-3">Especialidade</th>
-                  <th scope="col" className="px-6 py-3">CRM</th>
                   <th scope="col" className="px-6 py-3">Email</th>
                   <th scope="col" className="px-6 py-3">Telefone</th>
+                  <th scope="col" className="px-6 py-3">Dias de Atendimento</th>
+                  <th scope="col" className="px-6 py-3">Horário</th>
                   <th scope="col" className="px-6 py-3">Ações</th>
                 </tr>
               </thead>
@@ -259,9 +294,10 @@ export default function Medicos() {
                     <tr key={medico.id} className="bg-white border-b hover:bg-gray-50">
                       <td className="px-6 py-4 font-medium text-gray-900">{medico.nome}</td>
                       <td className="px-6 py-4">{medico.especialidade}</td>
-                      <td className="px-6 py-4">{medico.crm}</td>
                       <td className="px-6 py-4">{medico.email}</td>
                       <td className="px-6 py-4">{medico.telefone}</td>
+                      <td className="px-6 py-4">{medico.diasAtendimento?.join(', ') || 'Não definido'}</td>
+                      <td className="px-6 py-4">{medico.horarioInicio && medico.horarioFim ? `${medico.horarioInicio} - ${medico.horarioFim}` : 'Não definido'}</td>
                       <td className="px-6 py-4">
                         <div className="flex space-x-2">
                           <button 
@@ -269,16 +305,15 @@ export default function Medicos() {
                             title="Editar médico"
                             onClick={() => handleEditarMedico(medico)}
                           >
-                            <Pencil className="w-4 h-4" />
-                            <span className="ml-1.5 text-xs font-medium">Editar</span>
+                            <Edit className="h-5 w-5" />
                           </button>
                           <button 
                             className="flex items-center justify-center p-1.5 bg-red-100 text-red-700 rounded-md hover:bg-red-200 transition-colors duration-200"
                             title="Excluir médico"
                             onClick={() => handleExcluirMedico(medico.id)}
                           >
-                            <Trash2 className="w-4 h-4" />
-                            <span className="ml-1.5 text-xs font-medium">Excluir</span>
+                            <Trash2 className="w-5 h-5" />
+                            
                           </button>
                         </div>
                       </td>
@@ -286,7 +321,7 @@ export default function Medicos() {
                   ))
                 ) : (
                   <tr className="bg-white border-b">
-                    <td colSpan={6} className="px-6 py-4 text-center text-gray-500">
+                    <td colSpan={8} className="px-6 py-4 text-center text-gray-500">
                       {searchTerm ? 'Nenhum médico encontrado com os critérios de busca.' : 'Nenhum médico cadastrado.'}
                     </td>
                   </tr>
@@ -315,7 +350,10 @@ export default function Medicos() {
                     especialidade: "",
                     crm: "",
                     email: "",
-                    telefone: ""
+                    telefone: "",
+                    diasAtendimento: [],
+                    horarioInicio: "",
+                    horarioFim: ""
                   });
                 }}
                 className="text-gray-400 hover:text-gray-500"
@@ -396,6 +434,51 @@ export default function Medicos() {
                 />
               </div>
               
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Dias de Atendimento</label>
+                <div className="grid grid-cols-4 gap-2">
+                  {['seg', 'ter', 'qua', 'qui', 'sex', 'sab', 'dom'].map((dia) => (
+                    <div key={dia} className="flex items-center">
+                      <input
+                        type="checkbox"
+                        id={`dia-${dia}`}
+                        checked={novoMedico.diasAtendimento?.includes(dia) || false}
+                        onChange={() => handleDiaAtendimentoChange(dia)}
+                        className="w-4 h-4 text-indigo-600 bg-gray-100 border-gray-300 rounded focus:ring-indigo-500"
+                      />
+                      <label htmlFor={`dia-${dia}`} className="ml-2 text-sm font-medium text-gray-700 capitalize">
+                        {dia}
+                      </label>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label htmlFor="horarioInicio" className="block text-sm font-medium text-gray-700 mb-1">Horário Início</label>
+                  <input
+                    type="time"
+                    id="horarioInicio"
+                    name="horarioInicio"
+                    value={novoMedico.horarioInicio}
+                    onChange={handleInputChange}
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full p-2.5"
+                  />
+                </div>
+                <div>
+                  <label htmlFor="horarioFim" className="block text-sm font-medium text-gray-700 mb-1">Horário Fim</label>
+                  <input
+                    type="time"
+                    id="horarioFim"
+                    name="horarioFim"
+                    value={novoMedico.horarioFim}
+                    onChange={handleInputChange}
+                    className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block w-full p-2.5"
+                  />
+                </div>
+              </div>
+              
               <div className="flex justify-end space-x-2 pt-4">
                 <button
                   type="button"
@@ -408,7 +491,10 @@ export default function Medicos() {
                       especialidade: "",
                       crm: "",
                       email: "",
-                      telefone: ""
+                      telefone: "",
+                      diasAtendimento: [],
+                      horarioInicio: "",
+                      horarioFim: ""
                     });
                   }}
                   className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500"

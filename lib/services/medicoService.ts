@@ -7,6 +7,9 @@ export interface MedicoInput {
   crm: string;
   email: string;
   telefone: string;
+  diasAtendimento?: string[];
+  horarioInicio?: string;
+  horarioFim?: string;
 }
 
 export class MedicoService {
